@@ -1,10 +1,10 @@
 # Data analysis
 - Document here the project: gdelt
-- Description: Project Description
-- Data Source:
-- Type of analysis:
+- Description: Google BigQuery Pipelines with Python
+- Data Source: https://console.cloud.google.com/bigquery?project=gdelt-bq&page=table&t=events&d=gdeltv2&p=gdelt-bq&redirect_from_classic=true
 
-Please document the project the better you can.
+
+Data extracted from https://blog.gdeltproject.org/gdelt-2-0-our-global-world-in-realtime/
 
 # Startup the project
 
