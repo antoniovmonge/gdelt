@@ -134,8 +134,8 @@ mydata = GdeltData(url,path)
 
 # Setting the timer to execute the script every 15 min.
 
-schedule.every(4).seconds.do(mydata.download_extract_save)
-# schedule.every(15).minutes.do(download_extract)
+# schedule.every(4).seconds.do(mydata.download_extract_save)
+schedule.every(15).minutes.do(mydata.download_extract_save)
 
 while True:
     schedule.run_pending()
