@@ -5,5 +5,4 @@
 raw_data/
 **/__pycache__/
 .env
-temp/
 parquetfiles/
