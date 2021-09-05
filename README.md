@@ -8,8 +8,8 @@ The program runs executing `app.py`
 
 The class-based Python script run as follows:
 - Checks if there is a new release of the Events dataset
-- If there is a new dataset available, download the CSV file and save it in a `temp` directory *
-- Stores up to 2 csv files in the `temp` folder and deletes the older ones
+- If there is a new dataset available, download the CSV file and save it in a `csvfiles` directory *
+- Stores up to 2 csv files in the `csvfiles` folder and deletes the older ones
 - Open the csv file as a new dataframe using `pandas` and drops the duplicates
 - Saves the dataframe as a parquet file into the `parquetfiles` directory *
 - As long as it is executing, the program runs every 15 min **(In test phase is executing every 4 secs)** 
@@ -24,6 +24,6 @@ while True:
 ```
 
 
-> Still to be implemented the creation of the `temp` and `parquetfiles` directories. At the moment this two folder can be created manually.
+> Still to be implemented the creation of the `csvfiles` and `parquetfiles` directories. At the moment this two folder can be created manually.
 
 
