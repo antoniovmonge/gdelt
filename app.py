@@ -38,74 +38,73 @@ class GdeltData:
 
         with urlopen(zipurl) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
+                print('*'*70)
+                print('RUNNING','\ttime: ',str(datetime.datetime.now()))
+                print('-'*70)
+                print('Actual file in url: ')
                 zfile.printdir()
                 info = zfile.infolist()[0]
-                # for info in zfile.infolist():
-                # Change the extension from CSV to csv (LOWER)
-                info.filename = info.filename.lower()
-                file_name = info.filename
-                # Print information of the file
-                print('\tFile Name:\t' + info.filename)
+                info.filename = info.filename.lower() # Change the extension from CSV to csv (LOWER)
+                file_name = info.filename # Variable used to read the .csv file in the first run of the program
+                print('\tFile Name:\t' + info.filename) # Print information of the file
                 print('\tModified:\t' + str(datetime.datetime(*info.date_time)))
-                # print('\tSystem:\t\t' + str(info.create_system) + '(0 = Windows, 3 = Unix)')
-                # print('\tZIP version:\t' + str(info.create_version))
                 print('\tCompressed:\t' + str(info.compress_size) + ' bytes')
                 print('\tUncompressed:\t' + str(info.file_size) + ' bytes')
                 
-                #This function extract and save the csv
                 def extract_save():
+                    '''
+                    Extracts and save the .csv file in the "temp" directory
+                    '''
                     print('*'*70)
-                    print('\tExtracting all the files... ' + '\ttime:\t' + str(datetime.datetime.now()))
+                    print('\tExtracting all the files... ' + '\ttimestamp:\t' + str(datetime.datetime.now()))
                     # Extract file
                     zfile.extract(member=info,path=path)
                     print('\tNew dataset downloaded')
-
-                # open the csv with pandas, give the csv the right format, and save the parquet file
+                
                 def save_parquet():
-                    csv_files = os.listdir(path)
-                    csv_files.sort(reverse=True)
-                    last_csv=f'{path}/{csv_files[0]}'
-                    df = pd.read_csv(last_csv, sep='\t', header = None)
+                    '''
+                    - Open the csv file with pandas
+                    - give the csv the right format
+                    - and save the parquet file
+                    '''
+                    # CREATING THE DATA FRAME from the csv file 
+                    df = pd.read_csv('temp/' + file_name, sep='\t', header = None)
+                    # changes the columns name to strings to avoid problems with parquet
                     df.columns = df.columns.astype(str)
-                    df = df.drop_duplicates()
-                    print('\tSaving parquet file in the "parquetfiles" folder')
+                    df = df.drop_duplicates() # Drop duplicates
+                    print('\t- Saving parquet file into the "parquetfiles" folder')
+                    # SAVING THE DATAFRAME AS PARQUET FILE (into "parquetfiles" directory)
                     df.to_parquet('parquetfiles/updatedfile.parquet')
-                    print('\tDone')
+                    print('\t- Done')
                     print()
+                    # Read and print the parquet file metadata
                     parquet_file = pq.ParquetFile('parquetfiles/updatedfile.parquet')
-                    print('\tNEW PARQUET FILE AVAILABLE IN "parquetfiles" folder')
+                    print('-'*70)
+                    print('\t* NEW PARQUET FILE AVAILABLE IN "parquetfiles" folder')
+                    print()
                     print(parquet_file.metadata)
                     print()
 
-                # update "csv_files" variable to check if there are already files inside
-                csv_files = os.listdir(path)
-                # first run
-                if csv_files == []:
+                # Updating "csv_files" (list variable) --> check if there are already files saved
+                csv_files = os.listdir(path) # Remember path = 'temp'
+
+                # FIRST RUN OF THE PROGRAM (No files in temp directory)
+                if csv_files == []: # Check that there are still no items in the temp directory folder
                     print('1: Empty list. Downloading data for the first time')
+                    # CALLING THE FUNCTIONS
                     extract_save()
-                    # print('First if statement')
-                    # df = pd.read_csv(f'{path} + /*.csv')
-                    df = pd.read_csv('temp/' + file_name, sep='\t', header = None)
-                    df.columns = df.columns.astype(str)
-                    df = df.drop_duplicates()
-                    print('\tSaving parquet file in the "parquetfiles" folder')
-                    print()
-                    df.to_parquet('parquetfiles/updatedfile.parquet')
-                    # Printing metadata of new parquet file
-                    parquet_file = pq.ParquetFile('parquetfiles/updatedfile.parquet')
-                    print('\tNEW PARQUET FILE AVAILABLE IN "parquetfiles" folder')
-                    print(parquet_file.metadata)
+                    save_parquet()
 
                 else:
+                    print('-'*70)
                     print('2: Checking for new datasets')
                     # Check if there is a new dataset available
                     csv_files = os.listdir(path)
                     if info.filename not in csv_files:
-                        print('2.1 (New data set available)')
+                        print('2.1 - New data set available')
                         extract_save()
                         save_parquet()
                         csv_files = os.listdir(path)
-                        print(len(csv_files))
                         # clean files if there are more than 2
                         if len(csv_files) > 2:
                             print(f'2.1.1 - More than 2 csv files in "{path}" folder')
@@ -116,11 +115,12 @@ class GdeltData:
                         else:
                             pass
                     else:
-                        print('*'*70)
-                        print('\tNo new dataset available:\t' + str(datetime.datetime.now()))
+                        print('-'*70)
+                        print('No new dataset available:\t' + str(datetime.datetime.now()))
                     
+                print('-'*70)
+                print('END OF THE EXECUTION (NEXT IN 15 MIN)')
                 print('*'*70)
-                print('\t####### END OF THE EXECUTION (NEXT IN 15 MIN) #########')
                 print()
                 print()
                 return None
@@ -132,12 +132,12 @@ path = 'temp'
 # Instantiate the data object
 mydata = GdeltData(url,path)
 
-# Setting the timer to execute the script every 15 min.
+# SETTING THE TIMMER TO EXECUTE EVERY X MIN (FOR CONTROL VERSION EVERY 4 SECS)
+# Change to every 5 or 15 min for real case scenario.
 
-# schedule.every(4).seconds.do(mydata.download_extract_save)
-schedule.every(15).minutes.do(mydata.download_extract_save)
+schedule.every(4).seconds.do(mydata.download_extract_save)
+# schedule.every(15).minutes.do(mydata.download_extract_save)
 
 while True:
     schedule.run_pending()
     time.sleep(1)
-

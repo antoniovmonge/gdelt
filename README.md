@@ -1,10 +1,31 @@
-# Data analysis
-- Document here the project: gdelt
-- Description: Google BigQuery Pipelines with Python
-- Data Source: https://console.cloud.google.com/bigquery?project=gdelt-bq&page=table&t=events&d=gdeltv2&p=gdelt-bq&redirect_from_classic=true
+# Get Data Script - gdelt
+- Description: Creates and saves a updated parquet file the gdeltproject.org event database.
+- Data Source: http://data.gdeltproject.org/gdeltv2/lastupdate.txt
 
 
-Data extracted from https://blog.gdeltproject.org/gdelt-2-0-our-global-world-in-realtime/
+The program runs executing `app.py` 
+
+
+The class-based Python script run as follows:
+- Checks if there is a new release of the Events dataset.
+- If there is a new dataset available, download the CSV file and save it in the "temp" folder *
+- Stores up to 2 csv files in the `temp` folder and deletes the older one
+- Open the file with the right parameters
+- Creates a df using `pandas` and drops the duplicates
+- Saves the df as a parquet file into the `parquetfiles` directory *
+- The program runs every 15 min (actually running 4 secs - testing phase) 
+```python
+# Change to every 5 or 15 min for real case scenario (uncomment second line)
+schedule.every(4).seconds.do(mydata.download_extract_save)
+# schedule.every(15).minutes.do(mydata.download_extract_save)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
+```
+
+
+> Still to be implemented the creation of the `temp` and `parquetfiles` directories. At the moment this two folder can be created manually.
 
 # Startup the project
 
