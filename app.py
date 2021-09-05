@@ -19,12 +19,14 @@ class GdeltData:
     def download_extract_save(self):
         '''
         1: open the url and read and print the csv info
-        2: check if the new file inside the zip is already in the temp directory
+        2: check if the new file inside the zip is already in the 'csvfiles' directory
         3: if it is a new one, extract and save the file changing
         its extension from .CSV to .csv
         '''
-        # This function extract the zip_url
         def get_zip_url(url):
+            '''
+            This function get the url that it is called to access the zip file
+            '''
             lines_list = []
             data = urlopen(url)
             for line in data:
@@ -36,12 +38,13 @@ class GdeltData:
 
         zipurl = get_zip_url(url)
 
+        # Accessing the csv file inside the zip and check if it should be dowloaded.
+        # It only extract and save the csv file if it is updated.
         with urlopen(zipurl) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
                 print('*'*70)
                 print('RUNNING','\ttime: ',str(datetime.datetime.now()))
                 print('-'*70)
-                print('Actual file in url: ')
                 zfile.printdir()
                 info = zfile.infolist()[0]
                 info.filename = info.filename.lower() # Change the extension from CSV to csv (LOWER)
@@ -53,7 +56,7 @@ class GdeltData:
                 
                 def extract_save():
                     '''
-                    Extracts and save the .csv file in the "temp" directory
+                    Extracts and save the .csv file in the "csvfiles" directory
                     '''
                     print('*'*70)
                     print('\tExtracting all the files... ' + '\ttimestamp:\t' + str(datetime.datetime.now()))
@@ -68,7 +71,7 @@ class GdeltData:
                     - and save the parquet file
                     '''
                     # CREATING THE DATA FRAME from the csv file 
-                    df = pd.read_csv('temp/' + file_name, sep='\t', header = None)
+                    df = pd.read_csv('csvfiles/' + file_name, sep='\t', header = None)
                     # changes the columns name to strings to avoid problems with parquet
                     df.columns = df.columns.astype(str)
                     df = df.drop_duplicates() # Drop duplicates
@@ -86,10 +89,10 @@ class GdeltData:
                     print()
 
                 # Updating "csv_files" (list variable) --> check if there are already files saved
-                csv_files = os.listdir(path) # Remember path = 'temp'
+                csv_files = os.listdir(path) # Remember path = 'csvfiles'
 
-                # FIRST RUN OF THE PROGRAM (No files in temp directory)
-                if csv_files == []: # Check that there are still no items in the temp directory folder
+                # FIRST RUN OF THE PROGRAM (No files in 'csvfiles' directory)
+                if csv_files == []: # Check that there are still no items in the 'csvfiles' directory folder
                     print('1: Empty list. Downloading data for the first time')
                     # CALLING THE FUNCTIONS
                     extract_save()
@@ -127,7 +130,7 @@ class GdeltData:
 
 
 url = 'http://data.gdeltproject.org/gdeltv2/lastupdate.txt'
-path = 'temp'
+path = 'csvfiles'
 
 # Instantiate the data object
 mydata = GdeltData(url,path)
