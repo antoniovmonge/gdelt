@@ -24,6 +24,6 @@ while True:
 ```
 
 
-> Still to be implemented the creation of the `csvfiles` and `parquetfiles` directories. At the moment this two folder can be created manually.
+> Still to be implemented the creation of the `csvfiles` and `parquetfiles` directories. At the moment, these two folder can be created manually.
 
 
