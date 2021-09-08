@@ -25,7 +25,7 @@ class GdeltData:
         '''
         def get_zip_url(url):
             '''
-            This function get the url that it is called to access the zip file
+            This function gets the url that it is called to access the zip file
             '''
             lines_list = []
             data = urlopen(url)
@@ -38,7 +38,7 @@ class GdeltData:
 
         zipurl = get_zip_url(url)
 
-        # Accessing the csv file inside the zip and check if it should be dowloaded.
+        # Accessing the csv file inside the zip and check if it should be downloaded.
         # It only extract and save the csv file if it is updated.
         with urlopen(zipurl) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
