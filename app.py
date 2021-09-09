@@ -9,6 +9,10 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 # FIXED URL WITH LAST UPDATE
+url = 'http://data.gdeltproject.org/gdeltv2/lastupdate.txt'
+
+# path to store csv files
+path = 'csvfiles'
 
 class GdeltData:
     def __init__(self, url, path):
@@ -128,9 +132,6 @@ class GdeltData:
                 print()
                 return None
 
-
-url = 'http://data.gdeltproject.org/gdeltv2/lastupdate.txt'
-path = 'csvfiles'
 
 # Instantiate the data object
 mydata = GdeltData(url,path)
